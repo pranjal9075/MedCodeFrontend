@@ -1,4 +1,3 @@
-import logoIcon from './logoIcon.png'
 import logoImg1 from './logoImg1.png'
 import logoImg2 from './logoImg2.png'
 import logoImg3 from './logoImg3.png'
@@ -40,7 +39,6 @@ import phoneIcon from './phoneIcon.png';
 import mapIcon from './mapIcon.png';
 
 export const assets={
-    logoIcon,
     logoImg1,
     logoImg2,
     logoImg3,
