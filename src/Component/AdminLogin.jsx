@@ -19,7 +19,7 @@ const AdminLogin = ({ isOpen, onClose, onLoginSuccess }) => {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/admin-profile/login",
+        `${BASE_URL}/api/admin-profile/login`,
         {
           method: "POST",
           headers: {

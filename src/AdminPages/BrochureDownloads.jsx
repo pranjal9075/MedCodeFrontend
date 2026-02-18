@@ -14,7 +14,7 @@ const BrochureDownloads = () => {
   const fetchDownloads = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/brochure-requests");
+      const res = await fetch(`${BASE_URL}/api/brochure-requests`);
       const data = await res.json();
       if (data.success) {
         setDownloads(
@@ -82,7 +82,7 @@ const handleDelete = async (id) => {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/brochure-requests/${id}`,
+      `${BASE_URL}/api/brochure-requests/${id}`,
       { method: "DELETE" }
     );
 
@@ -108,7 +108,7 @@ const handleEdit = (download) => {
 const handleSaveEdit = async () => {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/brochure-requests/${editModal.id}`,
+      `${BASE_URL}/api/brochure-requests/${editModal.id}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
