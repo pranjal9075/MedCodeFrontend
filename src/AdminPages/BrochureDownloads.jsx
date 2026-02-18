@@ -14,7 +14,7 @@ const BrochureDownloads = () => {
   const fetchDownloads = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/api/brochure-requests`);
+      const res = await fetch("http://localhost:5000/api/brochure-requests");
       const data = await res.json();
       if (data.success) {
         setDownloads(
@@ -76,69 +76,6 @@ const BrochureDownloads = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
 
-  // ---------------- DELETE ----------------
-const handleDelete = async (id) => {
-  if (!window.confirm("Are you sure you want to delete this record?")) return;
-
-  try {
-    const res = await fetch(
-      `${BASE_URL}/api/brochure-requests/${id}`,
-      { method: "DELETE" }
-    );
-
-    const data = await res.json();
-
-    if (data.success) {
-      setDownloads(downloads.filter((d) => d.id !== id));
-    } else {
-      alert(data.message);
-    }
-  } catch (error) {
-    console.error("Delete Error:", error);
-    alert("Delete failed");
-  }
-};
-
-// ---------------- OPEN EDIT ----------------
-const handleEdit = (download) => {
-  setEditModal(download);
-};
-
-// ---------------- SAVE EDIT ----------------
-const handleSaveEdit = async () => {
-  try {
-    const res = await fetch(
-      `${BASE_URL}/api/brochure-requests/${editModal.id}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: editModal.email,
-          mobile: editModal.mobile,
-        }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (data.success) {
-      setDownloads(
-        downloads.map((d) =>
-          d.id === editModal.id
-            ? { ...d, email: editModal.email, mobile: editModal.mobile }
-            : d
-        )
-      );
-      setEditModal(null);
-    } else {
-      alert(data.message);
-    }
-  } catch (error) {
-    console.error("Update Error:", error);
-    alert("Update failed");
-  }
-};
-
   return (
   <div className="p-4 md:p-6">
   <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-[#4a7c6f] to-[#5a8c7f] bg-clip-text text-transparent flex items-center gap-2">
@@ -181,52 +118,6 @@ const handleSaveEdit = async () => {
         </tbody>
       </table>
     </div>
-    {editModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-       onClick={() => setEditModal(null)}>
-    <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md"
-         onClick={(e) => e.stopPropagation()}>
-      <h3 className="text-lg md:text-xl font-bold mb-4">
-        Edit Brochure Request
-      </h3>
-
-      <div className="space-y-3">
-        <input
-          type="email"
-          value={editModal.email}
-          onChange={(e) =>
-            setEditModal({ ...editModal, email: e.target.value })
-          }
-          className="w-full border px-3 py-2 rounded"
-        />
-
-        <input
-          type="text"
-          value={editModal.mobile}
-          onChange={(e) =>
-            setEditModal({ ...editModal, mobile: e.target.value })
-          }
-          className="w-full border px-3 py-2 rounded"
-        />
-      </div>
-
-      <div className="flex gap-2 mt-4">
-        <button
-          onClick={handleSaveEdit}
-          className="flex-1 bg-[#4a7c6f] text-white px-4 py-2 rounded">
-          Save
-        </button>
-
-        <button
-          onClick={() => setEditModal(null)}
-          className="flex-1 bg-gray-500 text-white px-4 py-2 rounded">
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
     <div className="p-3 md:p-4 flex flex-col sm:flex-row justify-center items-center gap-2">
       <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-2 md:px-3 py-1 border rounded text-xs md:text-sm hover:bg-gray-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed">&lt; Prev</button>
       {[...Array(totalPages)].map((_, i) => (

@@ -1,4 +1,4 @@
-const BASE_URL = "https://medcodebackend.onrender.com";
+const BASE_URL = "http://localhost:5000";
 
 export const getUsers = async () => {
   const res = await fetch(`${BASE_URL}/api/users`);
