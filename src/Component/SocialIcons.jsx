@@ -1,7 +1,7 @@
 // src/Components/SocialIcons.jsx
 
 import React from "react";
-import { assets } from "../src/assets/assets";
+import { assets } from "../assets/assets";
 
 
 const SocialIcons = () => {

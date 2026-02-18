@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
 
 const InquiryPopup = ({
   autoOpenDelay = 2500,
@@ -49,6 +50,7 @@ const InquiryPopup = ({
     setErrors((p) => ({ ...p, [k]: undefined }));
   };
 
+  // ✅ API SUBMIT
   const submit = async (e) => {
     e.preventDefault();
     if (sending) return;
@@ -60,14 +62,30 @@ const InquiryPopup = ({
       return;
     }
 
-    setSending(true);
-    audioRef.current?.play().catch(() => {});
+    try {
+      setSending(true);
+      audioRef.current?.play().catch(() => {});
 
-    setSuccess(true);
-    setForm({ name: "", phone: "", inquiry: "", message: "" });
+      // ✅ CALL BACKEND
+      await axios.post("http://localhost:5000/api/inquiry", {
+        name: form.name,
+        phone: form.phone,
+        inquiry: form.inquiry,
+        message: form.message,
+      });
 
-    setTimeout(() => setSuccess(false), 2000);
-    setSending(false);
+      // SUCCESS
+      setSuccess(true);
+      setForm({ name: "", phone: "", inquiry: "", message: "" });
+
+      setTimeout(() => setSuccess(false), 2000);
+
+    } catch (error) {
+      console.error("Inquiry Error:", error);
+      alert("Failed to send inquiry");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -92,7 +110,6 @@ const InquiryPopup = ({
           shadow-[0_5px_20px_rgba(0,0,0,0.15)]
           animate-popupScale ${Object.keys(errors).length ? "ring-1 ring-red-300" : ""}`}
         >
-          {/* Close */}
           <button
             onClick={() => setOpen(false)}
             className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-lg cursor-pointer"
@@ -171,7 +188,6 @@ const InquiryPopup = ({
         </div>
       )}
 
-      {/* Animations */}
       <style>{`
         @keyframes popupIn {
           from { transform: translateY(12px) scale(.96); opacity: 0; }

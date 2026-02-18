@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import ConfettiExplosion from "react-confetti-explosion";
-import { assets } from "../src/assets/assets";
+import { assets } from "../assets/assets";
 
 const awards = [
   { img: assets.award1 },

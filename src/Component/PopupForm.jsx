@@ -1,6 +1,6 @@
 // PopupForm.jsx
 import React from "react";
-import { assets } from "../src/assets/assets";
+import { assets } from "../assets/assets";
 
 const PopupForm = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
