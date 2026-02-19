@@ -52,41 +52,45 @@ const InquiryPopup = ({
 
   // ✅ API SUBMIT
   const submit = async (e) => {
-    e.preventDefault();
-    if (sending) return;
+  e.preventDefault();
+  if (sending) return;
 
-    if (!validate()) {
-      cardRef.current.classList.remove("shake");
-      void cardRef.current.offsetWidth;
-      cardRef.current.classList.add("shake");
-      return;
-    }
+  if (!validate()) {
+    cardRef.current.classList.remove("shake");
+    void cardRef.current.offsetWidth;
+    cardRef.current.classList.add("shake");
+    return;
+  }
 
-    try {
-      setSending(true);
-      audioRef.current?.play().catch(() => {});
+  try {
+    setSending(true);
+    audioRef.current?.play().catch(() => {});
 
-      // ✅ CALL BACKEND
-      await axios.post("http://localhost:5000/api/inquiry", {
-        name: form.name,
-        phone: form.phone,
-        inquiry: form.inquiry,
-        message: form.message,
-      });
+    const res = await axios.post("http://localhost:5000/api/inquiry", form);
 
-      // SUCCESS
+    if (res.data.success) {
       setSuccess(true);
       setForm({ name: "", phone: "", inquiry: "", message: "" });
-
+      setErrors({});
       setTimeout(() => setSuccess(false), 2000);
-
-    } catch (error) {
-      console.error("Inquiry Error:", error);
-      alert("Failed to send inquiry");
-    } finally {
-      setSending(false);
     }
-  };
+  } catch (error) {
+    console.error("Inquiry Error:", error);
+    const msg = error.response?.data?.message || "Failed to send inquiry";
+
+    // Show backend error on name/phone fields
+    setErrors((prev) => ({ ...prev, name: msg, phone: msg }));
+
+    // Shake animation
+    cardRef.current.classList.remove("shake");
+    void cardRef.current.offsetWidth;
+    cardRef.current.classList.add("shake");
+  } finally {
+    setSending(false);
+  }
+};
+
+
 
   return (
     <>
@@ -125,54 +129,63 @@ const InquiryPopup = ({
           </p>
 
           <form className="flex flex-col gap-2" onSubmit={submit}>
-            <input
-              value={form.name}
-              onChange={change("name")}
-              placeholder="Name"
-              className={`w-full px-3 py-2 text-[13px] rounded-md bg-gray-50 text-gray-800
-              ${errors.name ? "border border-red-400" : "border border-gray-300"}`}
-            />
+  <div className="flex flex-col">
+    <input
+      value={form.name}
+      onChange={change("name")}
+      placeholder="Name"
+      className={`w-full px-3 py-2 text-[13px] rounded-md bg-gray-50 text-gray-800
+      ${errors.name ? "border border-red-400" : "border border-gray-300"}`}
+    />
+    {errors.name && <span className="text-red-500 text-xs mt-0.5">{errors.name}</span>}
+  </div>
 
-            <input
-              value={form.phone}
-              onChange={change("phone")}
-              placeholder="Phone"
-              className={`w-full px-3 py-2 text-[13px] rounded-md bg-gray-50 text-gray-800
-              ${errors.phone ? "border border-red-400" : "border border-gray-300"}`}
-            />
+  <div className="flex flex-col">
+    <input
+      value={form.phone}
+      onChange={change("phone")}
+      placeholder="Phone"
+      className={`w-full px-3 py-2 text-[13px] rounded-md bg-gray-50 text-gray-800
+      ${errors.phone ? "border border-red-400" : "border border-gray-300"}`}
+    />
+    {errors.phone && <span className="text-red-500 text-xs mt-0.5">{errors.phone}</span>}
+  </div>
 
-            <select
-              value={form.inquiry}
-              onChange={change("inquiry")}
-              className={`w-full px-3 py-2 text-[13px] rounded-md bg-gray-50 text-gray-800
-              ${errors.inquiry ? "border border-red-400" : "border border-gray-300"}`}
-            >
-              <option value="">Select Inquiry</option>
-              <option value="ICD-10">ICD-10</option>
-              <option value="CPT">CPT</option>
-              <option value="Modifier">Modifier</option>
-              <option value="Billing">Billing</option>
-            </select>
+  <select
+    value={form.inquiry}
+    onChange={change("inquiry")}
+    className={`w-full px-3 py-2 text-[13px] rounded-md bg-gray-50 text-gray-800
+    ${errors.inquiry ? "border border-red-400" : "border border-gray-300"}`}
+  >
+    <option value="">Select Inquiry</option>
+    <option value="ICD-10">ICD-10</option>
+    <option value="CPT">CPT</option>
+    <option value="Modifier">Modifier</option>
+    <option value="Billing">Billing</option>
+  </select>
+  {errors.inquiry && <span className="text-red-500 text-xs mt-0.5">{errors.inquiry}</span>}
 
-            <textarea
-              value={form.message}
-              onChange={change("message")}
-              rows={2}
-              placeholder="Message"
-              className={`w-full px-3 py-2 text-[13px] rounded-md bg-gray-50 text-gray-800 resize-none
-              ${errors.message ? "border border-red-400" : "border border-gray-300"}`}
-            />
+  <textarea
+    value={form.message}
+    onChange={change("message")}
+    rows={2}
+    placeholder="Message"
+    className={`w-full px-3 py-2 text-[13px] rounded-md bg-gray-50 text-gray-800 resize-none
+    ${errors.message ? "border border-red-400" : "border border-gray-300"}`}
+  />
+  {errors.message && <span className="text-red-500 text-xs mt-0.5">{errors.message}</span>}
 
-            <button
-              type="submit"
-              disabled={sending}
-              className="w-full mt-1 py-2 rounded-full text-[13px] font-semibold
-              bg-linear-to-r from-purple-500 to-cyan-500 text-white
-              shadow-md hover:scale-[1.03] transition cursor-pointer"
-            >
-              {sending ? "Sending..." : "Send Inquiry"}
-            </button>
-          </form>
+  <button
+    type="submit"
+    disabled={sending}
+    className="w-full mt-1 py-2 rounded-full text-[13px] font-semibold
+    bg-linear-to-r from-purple-500 to-cyan-500 text-white
+    shadow-md hover:scale-[1.03] transition cursor-pointer"
+  >
+    {sending ? "Sending..." : "Send Inquiry"}
+  </button>
+</form>
+
         </div>
       )}
 

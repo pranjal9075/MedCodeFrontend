@@ -9,6 +9,27 @@ const Dashboard = () => {
     totalInquiries: 0,
     pendingApprovals: 0
   });
+ useEffect(() => {
+  const fetchTrend = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/stats/trend");
+      const result = await res.json();
+
+      if (result.success) {
+        setLineData(prev => ({
+          ...prev,
+          year: result.data
+        }));
+      }
+
+    } catch (err) {
+      console.log("Trend Error:", err);
+    }
+  };
+
+  fetchTrend();
+}, []);
+
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -40,31 +61,11 @@ const Dashboard = () => {
     fetchStats();
   }, []);
 
-  const lineData = {
-    week: [
-      { name: "Mon", registrations: 45, inquiries: 30 },
-      { name: "Tue", registrations: 52, inquiries: 38 },
-      { name: "Wed", registrations: 48, inquiries: 35 },
-      { name: "Thu", registrations: 61, inquiries: 42 },
-      { name: "Fri", registrations: 55, inquiries: 40 },
-      { name: "Sat", registrations: 38, inquiries: 28 },
-      { name: "Sun", registrations: 42, inquiries: 32 },
-    ],
-    month: [
-      { name: "Week 1", registrations: 245, inquiries: 180 },
-      { name: "Week 2", registrations: 280, inquiries: 210 },
-      { name: "Week 3", registrations: 265, inquiries: 195 },
-      { name: "Week 4", registrations: 310, inquiries: 230 },
-    ],
-    year: [
-      { name: "Jan", registrations: 980, inquiries: 720 },
-      { name: "Feb", registrations: 1050, inquiries: 780 },
-      { name: "Mar", registrations: 1120, inquiries: 850 },
-      { name: "Apr", registrations: 1200, inquiries: 920 },
-      { name: "May", registrations: 1150, inquiries: 880 },
-      { name: "Jun", registrations: 1280, inquiries: 950 },
-    ],
-  };
+  const [lineData, setLineData] = useState({
+  week: [],
+  month: [],
+  year: []
+});
 
   const pieData = [
     { name: "Students", value: 650, color: "#4a7c6f" },
@@ -74,14 +75,6 @@ const Dashboard = () => {
 
   return (
     <div className="p-4 md:p-6 animate-fadeIn">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <h2 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-[#4a7c6f] to-[#5a8c7f] bg-clip-text text-transparent animate-slideInLeft">Dashboard Overview</h2>
-        <div className="flex gap-2 w-full md:w-auto animate-slideInRight">
-          <button onClick={() => setTimeFilter("week")} className={`flex-1 md:flex-none px-3 md:px-4 py-2 rounded-xl text-sm md:text-base transition-all duration-300 ${timeFilter === "week" ? "bg-gradient-to-r from-[#4a7c6f] to-[#5a8c7f] text-white shadow-xl scale-105" : "bg-white hover:bg-gray-50 shadow-md hover:shadow-lg hover:scale-105"}`}>Week</button>
-          <button onClick={() => setTimeFilter("month")} className={`flex-1 md:flex-none px-3 md:px-4 py-2 rounded-xl text-sm md:text-base transition-all duration-300 ${timeFilter === "month" ? "bg-gradient-to-r from-[#4a7c6f] to-[#5a8c7f] text-white shadow-xl scale-105" : "bg-white hover:bg-gray-50 shadow-md hover:shadow-lg hover:scale-105"}`}>Month</button>
-          <button onClick={() => setTimeFilter("year")} className={`flex-1 md:flex-none px-3 md:px-4 py-2 rounded-xl text-sm md:text-base transition-all duration-300 ${timeFilter === "year" ? "bg-gradient-to-r from-[#4a7c6f] to-[#5a8c7f] text-white shadow-xl scale-105" : "bg-white hover:bg-gray-50 shadow-md hover:shadow-lg hover:scale-105"}`}>Year</button>
-        </div>
-      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="relative bg-gradient-to-br from-white via-blue-50 to-indigo-100 p-6 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-3 hover:scale-105 border-2 border-blue-200 group animate-slideUp overflow-hidden">
@@ -121,7 +114,14 @@ const Dashboard = () => {
           <div className="mt-3 h-2 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 shadow-lg"></div>
         </div>
       </div>
-
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <h2 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-[#4a7c6f] to-[#5a8c7f] bg-clip-text text-transparent animate-slideInLeft">Dashboard Overview</h2>
+        <div className="flex gap-2 w-full md:w-auto animate-slideInRight">
+          <button onClick={() => setTimeFilter("week")} className={`flex-1 md:flex-none px-3 md:px-4 py-2 rounded-xl text-sm md:text-base transition-all duration-300 ${timeFilter === "week" ? "bg-gradient-to-r from-[#4a7c6f] to-[#5a8c7f] text-white shadow-xl scale-105" : "bg-white hover:bg-gray-50 shadow-md hover:shadow-lg hover:scale-105"}`}>Week</button>
+          <button onClick={() => setTimeFilter("month")} className={`flex-1 md:flex-none px-3 md:px-4 py-2 rounded-xl text-sm md:text-base transition-all duration-300 ${timeFilter === "month" ? "bg-gradient-to-r from-[#4a7c6f] to-[#5a8c7f] text-white shadow-xl scale-105" : "bg-white hover:bg-gray-50 shadow-md hover:shadow-lg hover:scale-105"}`}>Month</button>
+          <button onClick={() => setTimeFilter("year")} className={`flex-1 md:flex-none px-3 md:px-4 py-2 rounded-xl text-sm md:text-base transition-all duration-300 ${timeFilter === "year" ? "bg-gradient-to-r from-[#4a7c6f] to-[#5a8c7f] text-white shadow-xl scale-105" : "bg-white hover:bg-gray-50 shadow-md hover:shadow-lg hover:scale-105"}`}>Year</button>
+        </div>
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
         <div className="relative bg-white p-4 md:p-6 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 border-2 border-gray-200 hover:border-[#4a7c6f] group animate-fadeIn overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#4a7c6f] via-blue-500 to-purple-500"></div>

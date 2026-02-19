@@ -36,8 +36,8 @@ const NewRegistrations = () => {
       
       autoTable(doc, {
         startY: 30,
-        head: [["Name", "Email", "Joined"]],
-        body: filteredData.map(r => [r.name, r.email, r.joined]),
+        head: [["Name", "Email","Mobile", "Joined"]],
+        body: filteredData.map(r => [r.name, r.email,r.mobile, r.joined]),
         didDrawPage: (data) => {
           doc.setFontSize(10);
           doc.setTextColor(200);
@@ -92,7 +92,7 @@ const handleSaveEdit = async () => {
         fullName: editModal.name,   // important
         email: editModal.email,
         countryCode: null,
-        mobile: null,
+        mobile: editModal.mobile,
       }
     );
 
@@ -100,7 +100,7 @@ const handleSaveEdit = async () => {
       setRegistrations(
         registrations.map((r) =>
           r.id === editModal.id
-            ? { ...r, name: editModal.name, email: editModal.email }
+            ? { ...r, name: editModal.name, email: editModal.email, mobile: editModal.mobile }
             : r
         )
       );
@@ -129,6 +129,7 @@ const handleSaveEdit = async () => {
               <tr>
                 <th className="p-2 md:p-3 text-left text-xs md:text-sm">Name</th>
                 <th className="p-2 md:p-3 text-left text-xs md:text-sm">Email</th>
+                <th className="p-2 md:p-3 text-left text-xs md:text-sm">Mobile</th>
                 <th className="p-2 md:p-3 text-left text-xs md:text-sm">Joined</th>
                 <th className="p-2 md:p-3 text-left text-xs md:text-sm">Actions</th>
               </tr>
@@ -139,6 +140,7 @@ const handleSaveEdit = async () => {
                   
                   <td className="p-2 md:p-3 flex items-center gap-2 text-xs md:text-sm"><div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-[#4a7c6f] to-[#5a8c7f] rounded-full flex-shrink-0 group-hover:scale-110 transition-transform duration-300"></div> <span className="truncate font-medium">{reg.name}</span></td>
                   <td className="p-2 md:p-3 text-xs md:text-sm truncate">{reg.email}</td>
+                  <td className="p-2 md:p-3 text-xs md:text-sm">{reg.mobile}</td>
                   <td className="p-2 md:p-3 text-xs md:text-sm">{reg.joined}</td>
                   <td className="p-2 md:p-3 flex gap-1 md:gap-2">
                     <button onClick={() => setViewModal(reg)} className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2 md:px-3 py-1 rounded-lg text-xs hover:shadow-lg transition-all duration-300 hover:scale-110">👁️</button>
@@ -169,6 +171,7 @@ const handleSaveEdit = async () => {
             <div className="space-y-3 text-sm md:text-base">
               <p className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl"><strong>Name:</strong> {viewModal.name}</p>
               <p className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl"><strong>Email:</strong> {viewModal.email}</p>
+              <p className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl"><strong>Mobile:</strong> {viewModal.mobile}</p>
               <p className="p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl"><strong>Joined:</strong> {viewModal.joined}</p>
             </div>
             <button onClick={() => setViewModal(null)} className="mt-4 bg-gradient-to-r from-gray-500 to-gray-600 text-white px-4 py-2 rounded-xl hover:shadow-lg transition-all duration-300 w-full hover:scale-105 text-sm md:text-base">Close</button>
@@ -188,6 +191,10 @@ const handleSaveEdit = async () => {
               <div>
                 <label className="block text-xs md:text-sm font-medium mb-1">Email</label>
                 <input type="email" value={editModal.email} onChange={(e) => setEditModal({...editModal, email: e.target.value})} className="w-full border-2 border-gray-200 px-3 py-2 rounded-xl text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[#4a7c6f] focus:border-transparent transition-all" />
+              </div>
+              <div>
+                <label className="block text-xs md:text-sm font-medium mb-1">Mobile</label>
+                <input type="text" value={editModal.mobile} onChange={(e) => setEditModal({...editModal, mobile: e.target.value})} className="w-full border-2 border-gray-200 px-3 py-2 rounded-xl text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[#4a7c6f] focus:border-transparent transition-all" />
               </div>
             </div>
             <div className="flex gap-2 mt-4">

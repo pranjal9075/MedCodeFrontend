@@ -1,20 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { assets } from "../assets/assets";
 import RegisterPopup from "./RegisterPopup";
 import LoginPopup from "./Login";
 import PopupForm from "./PopupForm";
+import Profile from "../UserProfile/profile";
+import Settings from "../UserProfile/setting";
 
 const TopBar = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // ✅ CHECK LOGIN STATUS
   useEffect(() => {
     const checkLogin = () => {
       const token = localStorage.getItem("token");
+      const userData = localStorage.getItem("user");
       setIsLoggedIn(!!token);
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
     };
     checkLogin();
     window.addEventListener("authChanged", checkLogin);
@@ -41,7 +63,19 @@ const TopBar = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
+    setUser(null);
+    setShowDropdown(false);
     window.dispatchEvent(new Event("authChanged"));
+  };
+
+  const getInitials = () => {
+    if (!user) return "U";
+    const name = user.fullName || user.name || "";
+    const parts = name.trim().split(" ");
+    if (parts.length >= 2) {
+      return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`.toUpperCase();
+    }
+    return parts[0]?.charAt(0).toUpperCase() || "U";
   };
 
   return (
@@ -60,6 +94,10 @@ const TopBar = () => {
         onClose={() => setIsLoginOpen(false)}
         onSwitchToRegister={handleSwitchToRegister} // Pass kiya gaya prop
       />
+
+      <Profile isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
+
+      <Settings isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
 
       {/* TOP BAR UI */}
       <div className="w-full bg-white border-b fixed top-0 left-0 z-40 shadow-sm">
@@ -102,13 +140,55 @@ const TopBar = () => {
                 </button>
               </>
             ) : (
-              <button className="bg-red-500 text-white px-3 py-2 rounded-md cursor-pointer" onClick={handleLogout}>
-                Logout
-              </button>
+              <div className="relative" ref={dropdownRef}>
+                <div
+                  className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4C34A5] to-[#7C3AED] text-white flex items-center justify-center font-bold text-sm cursor-pointer hover:scale-110 hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 border-2 border-white/20"
+                  onClick={() => setShowDropdown(!showDropdown)}
+                >
+                  {getInitials()}
+                </div>
+                {showDropdown && (
+                  <div
+                    className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-2xl border border-gray-100 py-1 z-50 animate-[slideDown_0.2s_ease]"
+                  >
+                    <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-blue-50">
+                      <p className="font-bold text-gray-800 text-sm">{user?.fullName || user?.name || "User"}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{user?.email || ""}</p>
+                    </div>
+                    <button className="w-full text-left px-4 py-2.5 hover:bg-purple-50 text-gray-700 text-sm flex items-center gap-2 transition-colors" onClick={() => { setShowDropdown(false); setIsProfileOpen(true); }}>
+                      <span>👤</span> Profile
+                    </button>
+                    <button className="w-full text-left px-4 py-2.5 hover:bg-purple-50 text-gray-700 text-sm flex items-center gap-2 transition-colors" onClick={() => setShowDropdown(false)}>
+                      <span>📚</span> My Courses
+                    </button>
+                    <button className="w-full text-left px-4 py-2.5 hover:bg-purple-50 text-gray-700 text-sm flex items-center gap-2 transition-colors" onClick={() => { setShowDropdown(false); setIsSettingsOpen(true); }}>
+                      <span>⚙️</span> Settings
+                    </button>
+                    <div className="border-t border-gray-100 mt-1">
+                      <button className="w-full text-left px-4 py-2.5 hover:bg-red-50 text-red-600 text-sm font-medium flex items-center gap-2 transition-colors" onClick={handleLogout}>
+                        <span>🚪</span> Logout
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </>
   );
 };
