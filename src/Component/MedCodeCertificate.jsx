@@ -20,7 +20,7 @@ export default function MedCodeCertificate() {
   e.preventDefault();
 
   try {
-    const response = await fetch("http://localhost:5000/api/verify-user", {
+    const response = await fetch("http://localhost:5000/api/book-demo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -35,15 +35,13 @@ export default function MedCodeCertificate() {
     const data = await response.json();
 
     if (data.success) {
-      alert("Login Successful ✅");
-
+      alert("Demo Booked Successfully ✅");
       window.open(
         "https://www.youtube.com/@NexusCorporateTrainingCentre/videos",
         "_blank"
       );
-
     } else {
-      alert(data.message || "Invalid Details ❌");
+      alert(data.message || "Invalid Email or Mobile ❌");
     }
 
   } catch (error) {
