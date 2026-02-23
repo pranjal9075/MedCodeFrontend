@@ -23,7 +23,6 @@ const BrochureDownloads = () => {
             name: d.name || d.email.split("@")[0],
             email: d.email,
             mobile: d.mobile,
-            type: d.type || "Course Brochure",
             date: new Date(d.created_at).toLocaleString(),
           }))
         );
@@ -56,7 +55,7 @@ const BrochureDownloads = () => {
       
       autoTable(doc, {
         startY: 30,
-        head: [["Name", "Email", "Mobile", "Type", "Date"]],
+        head: [["Name", "Email", "Mobile", "Date"]],
         body: filteredData.map(d => [d.name, d.email, d.mobile, d.type, d.date]),
         didDrawPage: (data) => {
           doc.setFontSize(10);
@@ -71,6 +70,63 @@ const BrochureDownloads = () => {
       alert("Failed to generate PDF");
     }
   };
+
+  const handleDelete = async (id) => {
+  if (!window.confirm("Are you sure?")) return;
+
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/brochure-requests/${id}`,
+      { method: "DELETE" }
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+      fetchDownloads(); // refresh list
+    } else {
+      alert(data.message);
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Delete failed");
+  }
+};
+
+const handleEdit = (download) => {
+  setEditModal(download);
+};
+
+const handleSaveEdit = async () => {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/brochure-requests/${editModal.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: editModal.email,
+          mobile: editModal.mobile,
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+      fetchDownloads();
+      setEditModal(null);
+    } else {
+      alert(data.message);
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Update failed");
+  }
+};
+
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -87,6 +143,37 @@ const BrochureDownloads = () => {
       <button onClick={exportToPDF} className="border px-2 md:px-4 py-2 rounded text-xs md:text-sm hover:bg-gray-100">Export</button>
     </div>
   </div>
+  
+{viewModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setViewModal(null)}>
+    <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+      <h3 className="text-lg md:text-xl font-bold mb-4">Brochure Details</h3>
+      <div className="space-y-3 text-sm md:text-base">
+        <p><strong>Name:</strong> {viewModal.name}</p>
+        <p><strong>Email:</strong> {viewModal.email}</p>
+        <p><strong>Mobile:</strong> {viewModal.mobile}</p>
+        <p><strong>Date:</strong> {viewModal.date}</p>
+      </div>
+      <button onClick={() => setViewModal(null)} className="mt-4 bg-gray-500 text-white px-4 py-2 rounded w-full">Close</button>
+    </div>
+  </div>
+)}
+
+{editModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setEditModal(null)}>
+    <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+      <h3 className="text-lg md:text-xl font-bold mb-4">Edit Brochure Download</h3>
+      <div className="space-y-3">
+        <input type="email" value={editModal.email} onChange={(e) => setEditModal({...editModal, email: e.target.value})} className="w-full border px-3 py-2 rounded" placeholder="Email" />
+        <input type="text" value={editModal.mobile} onChange={(e) => setEditModal({...editModal, mobile: e.target.value})} className="w-full border px-3 py-2 rounded" placeholder="Mobile" />
+      </div>
+      <div className="flex gap-2 mt-4">
+        <button onClick={handleSaveEdit} className="flex-1 bg-[#4a7c6f] text-white px-4 py-2 rounded">Save</button>
+        <button onClick={() => setEditModal(null)} className="flex-1 bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
+      </div>
+    </div>
+  </div>
+)}
   <div className="bg-white rounded-lg shadow overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full min-w-[600px]">
@@ -95,7 +182,6 @@ const BrochureDownloads = () => {
             <th className="p-2 md:p-3 text-left text-xs md:text-sm">Name</th>
             <th className="p-2 md:p-3 text-left text-xs md:text-sm">Email</th>
             <th className="p-2 md:p-3 text-left text-xs md:text-sm">Mobile</th>
-            <th className="p-2 md:p-3 text-left text-xs md:text-sm">Brochure Type</th>
             <th className="p-2 md:p-3 text-left text-xs md:text-sm">Date / Time</th>
             <th className="p-2 md:p-3 text-left text-xs md:text-sm">Actions</th>
           </tr>
@@ -106,7 +192,6 @@ const BrochureDownloads = () => {
               <td className="p-2 md:p-3 text-xs md:text-sm">{download.name}</td>
               <td className="p-2 md:p-3 text-xs md:text-sm truncate max-w-[150px]">{download.email}</td>
               <td className="p-2 md:p-3 text-xs md:text-sm">{download.mobile}</td>
-              <td className="p-2 md:p-3 text-xs md:text-sm">{download.type}</td>
               <td className="p-2 md:p-3 text-xs md:text-sm">{download.date}</td>
               <td className="p-2 md:p-3 flex gap-1 md:gap-2">
                 <button onClick={() => setViewModal(download)} className="bg-blue-500 text-white px-2 md:px-3 py-1 rounded text-xs hover:bg-blue-600 transition-all">👁️</button>
@@ -127,6 +212,7 @@ const BrochureDownloads = () => {
     </div>
   </div>
 </div>
+
 );
 };
 
