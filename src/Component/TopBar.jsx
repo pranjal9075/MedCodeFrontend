@@ -34,13 +34,31 @@ const TopBar = () => {
       const token = localStorage.getItem("token");
       const userData = localStorage.getItem("user");
       setIsLoggedIn(!!token);
-      if (userData) {
-        setUser(JSON.parse(userData));
+      
+      if (userData && userData !== "undefined" && userData !== "null") {
+        try {
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
+        } catch (error) {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
       }
     };
     checkLogin();
     window.addEventListener("authChanged", checkLogin);
     return () => window.removeEventListener("authChanged", checkLogin);
+  }, []);
+
+  // Auto logout on window close
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
   // ✅ SWITCHING LOGIC (Implement kiya gaya hai)
