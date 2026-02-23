@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 
 const RegisterPopup = ({ isOpen, onClose }) => {
   const [fullName, setFullName] = useState("");
@@ -29,7 +30,7 @@ const RegisterPopup = ({ isOpen, onClose }) => {
       setOtpLoading(true);
 
       const res = await axios.post(
-        "http://localhost:5000/api/send-otp",
+        `${API_URL}/api/send-otp`,
         { email }
       );
 
@@ -52,7 +53,7 @@ const RegisterPopup = ({ isOpen, onClose }) => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/verify-otp",
+        `${API_URL}/api/verify-otp`,
         { email, otp }
       );
 
@@ -63,6 +64,8 @@ const RegisterPopup = ({ isOpen, onClose }) => {
       alert(error.response?.data?.message || "Invalid OTP");
     }
   };
+
+  
 
   // 🔥 REGISTER
   const handleSubmit = async (e) => {
@@ -87,7 +90,7 @@ const RegisterPopup = ({ isOpen, onClose }) => {
       setLoading(true);
 
       const res = await axios.post(
-        "http://localhost:5000/api/auth/register",
+        `${API_URL}/api/auth/register`,
         {
           fullName,
           email,

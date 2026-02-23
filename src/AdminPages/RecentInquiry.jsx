@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { API_URL } from "../config";
 
 const RecentInquiry = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,7 +18,7 @@ const RecentInquiry = () => {
 
   const fetchInquiries = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/inquiry");
+      const res = await axios.get(`${API_URL}/api/inquiry`);
       const formatted = res.data.map((item) => ({
         ...item,
         type: item.inquiry,
@@ -67,7 +68,7 @@ const handleDelete = async (id) => {
 
   try {
     const res = await axios.delete(
-      `http://localhost:5000/api/inquiry/${id}`
+      `${API_URL}/api/inquiry/${id}`
     );
 
     if (res.data.success) {
@@ -90,7 +91,7 @@ const handleEdit = (inq) => {
 const handleSaveEdit = async () => {
   try {
     const res = await axios.put(
-      `http://localhost:5000/api/inquiry/${editModal.id}`,
+      `${API_URL}/api/inquiry/${editModal.id}`,
       {
         name: editModal.name,
         phone: editModal.phone,

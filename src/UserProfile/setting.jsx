@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 
 const Settings = ({ isOpen, onClose }) => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -14,7 +15,7 @@ const Settings = ({ isOpen, onClose }) => {
     const token = localStorage.getItem("token");
 
     const response = await axios.put(
-      "http://localhost:5000/api/change-password",
+      `${API_URL}/api/change-password`,
       {
         currentPassword,
         newPassword,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { API_URL } from "../config";
 
 const Dashboard = () => {
   const [timeFilter, setTimeFilter] = useState("week");
@@ -12,7 +13,7 @@ const Dashboard = () => {
  useEffect(() => {
   const fetchTrend = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/stats/trend");
+      const res = await fetch(`${API_URL}/api/stats/trend`);
       const result = await res.json();
 
       if (result.success) {
@@ -34,7 +35,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/stats/count");
+        const res = await fetch(`${API_URL}/api/stats/count`);
         const result = await res.json();
         const data = result.data;
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { API_URL } from "../config";
 
 const BrochureDownloads = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,7 +15,7 @@ const BrochureDownloads = () => {
   const fetchDownloads = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/brochure-requests");
+      const res = await fetch(`${API_URL}/api/brochure-requests`);
       const data = await res.json();
       if (data.success) {
         setDownloads(
@@ -76,7 +77,7 @@ const BrochureDownloads = () => {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/brochure-requests/${id}`,
+      `${API_URL}/api/brochure-requests/${id}`,
       { method: "DELETE" }
     );
 
@@ -100,7 +101,7 @@ const handleEdit = (download) => {
 const handleSaveEdit = async () => {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/brochure-requests/${editModal.id}`,
+      `${API_URL}/api/brochure-requests/${editModal.id}`,
       {
         method: "PUT",
         headers: {

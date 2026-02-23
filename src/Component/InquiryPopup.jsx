@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 
 const InquiryPopup = ({
   autoOpenDelay = 2500,
@@ -66,7 +67,7 @@ const InquiryPopup = ({
     setSending(true);
     audioRef.current?.play().catch(() => {});
 
-    const res = await axios.post("http://localhost:5000/api/inquiry", form);
+    const res = await axios.post(`${API_URL}/api/inquiry`, form);
 
     if (res.data.success) {
       setSuccess(true);

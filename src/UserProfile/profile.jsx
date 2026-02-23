@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 
 const Profile = ({ isOpen, onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -43,7 +44,7 @@ const Profile = ({ isOpen, onClose }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.put(
-  "http://localhost:5000/api/profile",
+  `${API_URL}/api/profile`,
   { ...user, photo },
   {
     headers: {

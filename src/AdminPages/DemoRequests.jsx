@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { API_URL } from "../config";
 
 const DemoRequests = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,7 +12,7 @@ const DemoRequests = () => {
   const [requests, setRequests] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/demo-requests")
+    fetch(`${API_URL}/api/demo-requests`)
       .then((res) => res.json())
       .then((data) => {
         setRequests(data);
@@ -63,7 +64,7 @@ const handleDelete = async (id) => {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/demo-requests/${id}`,
+      `${API_URL}/api/demo-requests/${id}`,
       {
         method: "DELETE",
       }
@@ -88,7 +89,7 @@ const handleEdit = (req) => {
 const handleSaveEdit = async () => {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/demo-requests/${editModal.id}`,
+      `${API_URL}/api/demo-requests/${editModal.id}`,
       {
         method: "PUT",
         headers: {

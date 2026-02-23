@@ -159,12 +159,21 @@ const TopBar = () => {
               </>
             ) : (
               <div className="relative" ref={dropdownRef}>
-                <div
-                  className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4C34A5] to-[#7C3AED] text-white flex items-center justify-center font-bold text-sm cursor-pointer hover:scale-110 hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 border-2 border-white/20"
-                  onClick={() => setShowDropdown(!showDropdown)}
-                >
-                  {getInitials()}
-                </div>
+                {user?.photo ? (
+                  <img
+                    src={user.photo}
+                    alt="Profile"
+                    className="w-10 h-10 rounded-full object-cover cursor-pointer hover:scale-110 hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 border-2 border-white/20"
+                    onClick={() => setShowDropdown(!showDropdown)}
+                  />
+                ) : (
+                  <div
+                    className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4C34A5] to-[#7C3AED] text-white flex items-center justify-center font-bold text-sm cursor-pointer hover:scale-110 hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 border-2 border-white/20"
+                    onClick={() => setShowDropdown(!showDropdown)}
+                  >
+                    {getInitials()}
+                  </div>
+                )}
                 {showDropdown && (
                   <div
                     className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-2xl border border-gray-100 py-1 z-50 animate-[slideDown_0.2s_ease]"

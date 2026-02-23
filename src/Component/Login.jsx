@@ -74,6 +74,7 @@
 // export default LoginPopup;
 import React, { useState } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 
 const LoginPopup = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [email, setEmail] = useState("");
@@ -91,7 +92,7 @@ const LoginPopup = ({ isOpen, onClose, onSwitchToRegister }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        `${API_URL}/api/auth/login`,
         {
           email,
           password,

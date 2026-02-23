@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { API_URL } from "../config";
 
 const NewRegistrations = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,7 +15,7 @@ const NewRegistrations = () => {
   useEffect(() => {
     const fetchRegistrations = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/users");
+        const res = await axios.get(`${API_URL}/api/users`);
         setRegistrations(res.data);
       } catch (err) {
         console.error("Error fetching registrations:", err);
@@ -62,7 +63,7 @@ const handleDelete = async (id) => {
 
   try {
     const res = await axios.delete(
-      `http://localhost:5000/api/users/${id}`
+      `${API_URL}/api/users/${id}`
     );
 
     if (res.data.success) {
@@ -87,7 +88,7 @@ const handleEdit = (reg) => {
 const handleSaveEdit = async () => {
   try {
     const res = await axios.put(
-      `http://localhost:5000/api/users/${editModal.id}`,
+      `${API_URL}/api/users/${editModal.id}`,
       {
         fullName: editModal.name,   // important
         email: editModal.email,
