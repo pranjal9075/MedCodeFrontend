@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-
 const RegisterPopup = ({ isOpen, onClose }) => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -9,12 +8,70 @@ const RegisterPopup = ({ isOpen, onClose }) => {
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false); // NEW
+
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
+  // 🔥 SEND OTP
+  const handleSendOTP = async () => {
+    if (!email) {
+      alert("Enter email first");
+      return;
+    }
+
+    try {
+      setOtpLoading(true);
+
+      const res = await axios.post(
+        "http://localhost:5000/api/send-otp",
+        { email }
+      );
+
+      alert(res.data.message);
+      setOtpSent(true);
+
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  // 🔥 VERIFY OTP
+  const handleVerifyOTP = async () => {
+    if (!otp) {
+      alert("Enter OTP");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/verify-otp",
+        { email, otp }
+      );
+
+      alert(res.data.message);
+      setEmailVerified(true);
+
+    } catch (error) {
+      alert(error.response?.data?.message || "Invalid OTP");
+    }
+  };
+
+  // 🔥 REGISTER
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!emailVerified) {
+      alert("Please verify your email first!");
+      return;
+    }
 
     if (!fullName || !email || !mobile || !password || !confirmPassword) {
       alert("Please fill out all fields!");
@@ -46,146 +103,137 @@ const RegisterPopup = ({ isOpen, onClose }) => {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      // Reset form
-      setFullName("");
-      setEmail("");
-      setMobile("");
-      setPassword("");
-      setConfirmPassword("");
-
       onClose();
-    } catch (error) {
-      console.error(error);
 
-      alert(
-        error.response?.data?.message ||
-          "Registration failed. Try again."
-      );
+    } catch (error) {
+      alert(error.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center 
-                    bg-black/60 backdrop-blur-md z-50 overflow-hidden">
+    <div className="fixed inset-0 flex justify-center items-center bg-black/60 backdrop-blur-md z-50">
 
-      {/* CYBERPUNK NEON BACKGROUND */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute w-[450px] h-[450px] bg-purple-600/40 blur-[150px] rounded-full animate-pulse -top-32 -left-20"></div>
-        <div className="absolute w-[500px] h-[500px] bg-blue-500/40 blur-[160px] rounded-full animate-ping top-40 -right-32"></div>
-        <div className="absolute w-[350px] h-[350px] bg-cyan-400/30 blur-[120px] rounded-full animate-pulse bottom-10 left-1/3"></div>
-      </div>
-
-      {/* MAIN CARD */}
       <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 
-                      shadow-[0_0_40px_rgba(0,200,255,0.4)] 
-                      w-11/12 max-w-sm px-6 py-6 rounded-3xl rounded-bl-[60px]
-                      animate-[popupShow_0.6s_ease]">
+                      w-11/12 max-w-sm px-6 py-6 rounded-3xl">
 
         <button
           onClick={onClose}
-          className="absolute top-2 right-3 text-2xl font-bold text-white hover:text-pink-400 transition cursor-pointer"
+          className="absolute top-2 right-3 text-2xl text-white"
         >
           ×
         </button>
 
-        <h2 className="text-2xl font-extrabold text-center mb-4 
-                       bg-linear-to-r from-cyan-400 to-purple-500 text-transparent bg-clip-text">
+        <h2 className="text-2xl font-bold text-center text-white mb-4">
           Register Now
         </h2>
 
         <form className="text-white" onSubmit={handleSubmit}>
 
-          <label className="block mt-2 text-xs font-semibold neon-label">FULL NAME</label>
+          {/* FULL NAME */}
           <input
             type="text"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="w-full p-2 text-sm rounded-xl bg-white/10 border border-cyan-400/40 text-white outline-none mt-1 neon-input"
-            placeholder="Enter full name"
+            className="w-full p-2 mb-2 rounded-xl bg-white/10 border border-cyan-400/40"
+            placeholder="Full Name"
             required
           />
 
-          <label className="block mt-3 text-xs font-semibold neon-label">EMAIL (GMAIL)</label>
+          {/* EMAIL */}
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 text-sm rounded-xl bg-white/10 border border-purple-400/40 text-white outline-none mt-1 neon-input"
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setEmailVerified(false);
+              setOtpSent(false);
+            }}
+            className="w-full p-2 rounded-xl bg-white/10 border border-purple-400/40"
             placeholder="example@gmail.com"
             required
           />
 
-          <label className="block mt-3 text-xs font-semibold neon-label">MOBILE NUMBER</label>
-          <div className="flex gap-2 mt-1">
-            <select
-              value={countryCode}
-              onChange={(e) => setCountryCode(e.target.value)}
-              className="p-2 text-sm rounded-xl bg-white/10 border border-cyan-400/40 text-white outline-none neon-input"
-            >
-              <option className="bg-amber-950" value="+91">+91</option>
-              <option className="bg-amber-950" value="+1">+1</option>
-              <option className="bg-amber-950" value="+44">+44</option>
-              <option className="bg-amber-950" value="+61">+61</option>
-            </select>
+          {/* SEND OTP BUTTON */}
+          <button
+            type="button"
+            onClick={handleSendOTP}
+            disabled={otpLoading}
+            className="mt-2 mb-2 px-3 py-1 text-xs bg-cyan-500 rounded-lg"
+          >
+            {otpLoading ? "Sending..." : "Send OTP"}
+          </button>
 
-            <input
-              type="tel"
-              value={mobile}
-              onChange={(e) => setMobile(e.target.value)}
-              className="flex-1 p-2 text-sm rounded-xl bg-white/10 border border-cyan-400/40 text-white outline-none neon-input"
-              placeholder="1234567890"
-              required
-            />
-          </div>
+          {/* OTP INPUT */}
+          {otpSent && !emailVerified && (
+            <>
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className="w-full p-2 mt-2 rounded-xl bg-white/10 border border-green-400/40"
+                placeholder="Enter 6-digit OTP"
+              />
 
-          <label className="block mt-3 text-xs font-semibold neon-label">CREATE PASSWORD</label>
+              <button
+                type="button"
+                onClick={handleVerifyOTP}
+                className="mt-2 px-3 py-1 text-xs bg-green-500 rounded-lg"
+              >
+                Verify OTP
+              </button>
+            </>
+          )}
+
+          {/* VERIFIED MESSAGE */}
+          {emailVerified && (
+            <p className="text-green-400 text-sm mt-2">
+              ✅ Email Verified
+            </p>
+          )}
+
+          {/* MOBILE */}
+          <input
+            type="tel"
+            value={mobile}
+            onChange={(e) => setMobile(e.target.value)}
+            className="w-full p-2 mt-3 rounded-xl bg-white/10 border border-cyan-400/40"
+            placeholder="Mobile Number"
+            required
+          />
+
+          {/* PASSWORD */}
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 text-sm rounded-xl bg-white/10 border border-purple-400/40 text-white outline-none mt-1 neon-input"
-            placeholder="Enter password"
+            className="w-full p-2 mt-3 rounded-xl bg-white/10 border border-purple-400/40"
+            placeholder="Password"
             required
           />
 
-          <label className="block mt-3 text-xs font-semibold neon-label">RE-ENTER PASSWORD</label>
+          {/* CONFIRM PASSWORD */}
           <input
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full p-2 text-sm rounded-xl bg-white/10 border border-cyan-400/40 text-white outline-none mt-1 neon-input"
-            placeholder="Re-enter password"
+            className="w-full p-2 mt-3 rounded-xl bg-white/10 border border-cyan-400/40"
+            placeholder="Confirm Password"
             required
           />
 
-          {/* BUTTON */}
+          {/* REGISTER BUTTON */}
           <button
             type="submit"
-            disabled={loading}
-            className="w-full mt-4 py-2 text-sm rounded-full font-semibold
-                       bg-linear-to-r from-purple-500 to-cyan-500
-                       shadow-[0_0_15px_rgba(170,50,255,0.8)]
-                       hover:shadow-[0_0_25px_rgba(0,200,255,0.9)]
-                       transition-all neon-button cursor-pointer"
+            disabled={loading || !emailVerified}
+            className="w-full mt-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-cyan-500"
           >
             {loading ? "Registering..." : "REGISTER NOW"}
           </button>
 
         </form>
       </div>
-
-      <style>{`
-        @keyframes popupShow {
-          0% { transform: scale(0.7); opacity: 0; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-
-        .neon-input:hover { box-shadow: 0 0 12px rgba(0, 200, 255,0.5); }
-        .neon-label { text-shadow: 0 0 6px rgba(0, 200, 255,0.6); }
-        .neon-button:hover { transform: translateY(-2px); }
-      `}</style>
     </div>
   );
 };
