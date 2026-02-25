@@ -10,60 +10,11 @@ const RegisterPopup = ({ isOpen, onClose }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(false);
-  const [otpLoading, setOtpLoading] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
-  // 🔥 SEND OTP
-  const handleSendOTP = async () => {
-    if (!email) {
-      alert("Enter email first");
-      return;
-    }
-
-    try {
-      setOtpLoading(true);
-
-      const res = await axios.post(
-        `${API_URL}/api/send-otp`,
-        { email }
-      );
-
-      alert(res.data.message);
-      setOtpSent(true);
-
-    } catch (error) {
-      alert(error.response?.data?.message || "Failed to send OTP");
-    } finally {
-      setOtpLoading(false);
-    }
-  };
-
-  // 🔥 VERIFY OTP
-  const handleVerifyOTP = async () => {
-    if (!otp) {
-      alert("Enter OTP");
-      return;
-    }
-
-    try {
-      const res = await axios.post(
-        `${API_URL}/api/verify-otp`,
-        { email, otp }
-      );
-
-      alert(res.data.message);
-      setEmailVerified(true);
-
-    } catch (error) {
-      alert(error.response?.data?.message || "Invalid OTP");
-    }
-  };
 
   
 
@@ -71,10 +22,6 @@ const RegisterPopup = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!emailVerified) {
-      alert("Please verify your email first!");
-      return;
-    }
 
     if (!fullName || !email || !mobile || !password || !confirmPassword) {
       alert("Please fill out all fields!");
@@ -158,43 +105,6 @@ const RegisterPopup = ({ isOpen, onClose }) => {
             required
           />
 
-          {/* SEND OTP BUTTON */}
-          <button
-            type="button"
-            onClick={handleSendOTP}
-            disabled={otpLoading}
-            className="mt-2 mb-2 px-3 py-1 text-xs bg-cyan-500 rounded-lg"
-          >
-            {otpLoading ? "Sending..." : "Send OTP"}
-          </button>
-
-          {/* OTP INPUT */}
-          {otpSent && !emailVerified && (
-            <>
-              <input
-                type="text"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="w-full p-2 mt-2 rounded-xl bg-white/10 border border-green-400/40"
-                placeholder="Enter 6-digit OTP"
-              />
-
-              <button
-                type="button"
-                onClick={handleVerifyOTP}
-                className="mt-2 px-3 py-1 text-xs bg-green-500 rounded-lg"
-              >
-                Verify OTP
-              </button>
-            </>
-          )}
-
-          {/* VERIFIED MESSAGE */}
-          {emailVerified && (
-            <p className="text-green-400 text-sm mt-2">
-              ✅ Email Verified
-            </p>
-          )}
 
           {/* MOBILE */}
           <input
@@ -229,7 +139,7 @@ const RegisterPopup = ({ isOpen, onClose }) => {
           {/* REGISTER BUTTON */}
           <button
             type="submit"
-            disabled={loading || !emailVerified}
+            disabled={loading}
             className="w-full mt-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-cyan-500"
           >
             {loading ? "Registering..." : "REGISTER NOW"}
