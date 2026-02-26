@@ -17,6 +17,21 @@ const AdminDashboard = ({ onLogout }) => {
     avatar: "https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff&size=200"
   });
 
+  // Load admin profile from API on mount
+  React.useEffect(() => {
+    fetch("http://localhost:5000/api/admin-profile")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          setAdminProfile({
+            name: data.data.name,
+            avatar: data.data.avatar + "?t=" + Date.now(),
+          });
+        }
+      })
+      .catch((err) => console.log("Profile Load Error:", err));
+  }, []);
+
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900' : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'} transition-all duration-500 relative overflow-hidden`}>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
