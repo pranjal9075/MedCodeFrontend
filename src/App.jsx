@@ -1,11 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import RegisterPopup from "./Component/RegisterPopup";
-import SocialIcons from "./Component/SocialIcons";
-import InquiryPopup from "./Component/InquiryPopup";
-import Home from "./Pages/Home";
-import AdminDashboard from "./Component/AdminDashboard";
-import AdminLogin from "./Component/AdminLogin";
+
+const Home = lazy(() => import("./Pages/Home"));
+const AdminDashboard = lazy(() => import("./Component/AdminDashboard"));
+const AdminLogin = lazy(() => import("./Component/AdminLogin"));
+const RegisterPopup = lazy(() => import("./Component/RegisterPopup"));
+const SocialIcons = lazy(() => import("./Component/SocialIcons"));
+const InquiryPopup = lazy(() => import("./Component/InquiryPopup"));
+
+const Loading = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+  </div>
+);
 
 const AdminRoute = () => {
   const [showLogin, setShowLogin] = useState(true);
@@ -62,25 +69,27 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={
-          <>
-            <Home />
-            <RegisterPopup 
-              isOpen={isRegisterOpen} 
-              onClose={handleRegisterClose} 
-            />
-            {isInquiryOpen && (
-              <InquiryPopup 
-                autoOpenDelay={0}
-                onClose={() => setIsInquiryOpen(false)}
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path="/" element={
+            <>
+              <Home />
+              <RegisterPopup 
+                isOpen={isRegisterOpen} 
+                onClose={handleRegisterClose} 
               />
-            )}
-            <SocialIcons />
-          </>
-        } />
-        <Route path="/admin" element={<AdminRoute />} />
-      </Routes>
+              {isInquiryOpen && (
+                <InquiryPopup 
+                  autoOpenDelay={0}
+                  onClose={() => setIsInquiryOpen(false)}
+                />
+              )}
+              <SocialIcons />
+            </>
+          } />
+          <Route path="/admin" element={<AdminRoute />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
