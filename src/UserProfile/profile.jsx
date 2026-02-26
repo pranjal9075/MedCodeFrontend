@@ -12,6 +12,7 @@ const Profile = ({ isOpen, onClose }) => {
   });
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [mobileError, setMobileError] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -40,6 +41,11 @@ const Profile = ({ isOpen, onClose }) => {
   };
 
   const handleSave = async () => {
+    if (!/^[6-9]\d{9}$/.test(user.mobile)) {
+      setMobileError("Enter valid 10-digit mobile starting with 6-9");
+      return;
+    }
+
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
@@ -137,11 +143,17 @@ const Profile = ({ isOpen, onClose }) => {
                 <input
                   type="tel"
                   value={user.mobile}
-                  onChange={(e) => setUser({ ...user, mobile: e.target.value })}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setUser({ ...user, mobile: value });
+                    setMobileError("");
+                  }}
                   disabled={false}
+                  maxLength="10"
                   className="flex-1 px-3 py-2 text-sm border rounded-lg border-purple-300 focus:ring-2 focus:ring-purple-500 outline-none"
                 />
               </div>
+              {mobileError && <p className="text-red-500 text-xs mt-1">{mobileError}</p>}
             </div>
 
             {/* Save Button */}
