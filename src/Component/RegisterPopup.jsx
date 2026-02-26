@@ -7,6 +7,7 @@ const RegisterPopup = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState("");
   const [countryCode, setCountryCode] = useState("+91");
   const [mobile, setMobile] = useState("");
+  const [mobileError, setMobileError] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -30,6 +31,11 @@ const RegisterPopup = ({ isOpen, onClose }) => {
 
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
+      return;
+    }
+
+    if (!/^[6-9]\d{9}$/.test(mobile)) {
+      alert("Please enter a valid 10-digit mobile number starting with 6-9");
       return;
     }
 
@@ -107,14 +113,30 @@ const RegisterPopup = ({ isOpen, onClose }) => {
 
 
           {/* MOBILE */}
-          <input
-            type="tel"
-            value={mobile}
-            onChange={(e) => setMobile(e.target.value)}
-            className="w-full p-2 mt-3 rounded-xl bg-white/10 border border-cyan-400/40"
-            placeholder="Mobile Number"
-            required
-          />
+          <div>
+            <input
+              type="tel"
+              value={mobile}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                setMobile(value);
+                if (value.length === 10 && /^[6-9]/.test(value)) {
+                  setMobileError("");
+                } else if (value.length === 10) {
+                  setMobileError("Mobile must start with 6-9");
+                } else if (value.length > 0) {
+                  setMobileError("Mobile must be 10 digits");
+                } else {
+                  setMobileError("");
+                }
+              }}
+              className="w-full p-2 mt-3 rounded-xl bg-white/10 border border-cyan-400/40"
+              placeholder="Mobile Number"
+              maxLength="10"
+              required
+            />
+            {mobileError && <p className="text-red-400 text-xs mt-1">{mobileError}</p>}
+          </div>
 
           {/* PASSWORD */}
           <input

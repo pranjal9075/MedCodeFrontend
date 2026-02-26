@@ -37,8 +37,8 @@ const InquiryPopup = ({
     const e = {};
     if (!form.name.trim()) e.name = "Required";
     if (!form.phone.trim()) e.phone = "Required";
-    else if (!/^\+?[\d\s()-]{7,20}$/.test(form.phone))
-      e.phone = "Invalid number";
+    else if (!/^[6-9]\d{9}$/.test(form.phone))
+      e.phone = "Enter valid 10-digit mobile";
     if (!form.inquiry) e.inquiry = "Required";
     if (!form.message.trim() || form.message.trim().length < 6)
       e.message = "Min 6 characters";
@@ -143,9 +143,15 @@ const InquiryPopup = ({
 
   <div className="flex flex-col">
     <input
+      type="tel"
       value={form.phone}
-      onChange={change("phone")}
+      onChange={(e) => {
+        const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+        setForm((s) => ({ ...s, phone: value }));
+        setErrors((p) => ({ ...p, phone: undefined }));
+      }}
       placeholder="Phone"
+      maxLength="10"
       className={`w-full px-3 py-2 text-[13px] rounded-md bg-gray-50 text-gray-800
       ${errors.phone ? "border border-red-400" : "border border-gray-300"}`}
     />

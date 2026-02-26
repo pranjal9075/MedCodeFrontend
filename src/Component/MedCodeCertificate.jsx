@@ -9,6 +9,8 @@ export default function MedCodeCertificate() {
     countryCode: "+91"
   });
 
+  const [phoneError, setPhoneError] = useState("");
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -18,6 +20,11 @@ export default function MedCodeCertificate() {
 
   const handleSubmit = async (e) => {
   e.preventDefault();
+
+  if (!/^[6-9]\d{9}$/.test(formData.phone)) {
+    setPhoneError("Enter valid 10-digit mobile starting with 6-9");
+    return;
+  }
 
   try {
     const response = await fetch("http://localhost:5000/api/book-demo", {
@@ -108,10 +115,16 @@ export default function MedCodeCertificate() {
                   name="phone"
                   placeholder="Phone"
                   required
+                  maxLength="10"
                   value={formData.phone}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setFormData({ ...formData, phone: value });
+                    setPhoneError("");
+                  }}
                 />
               </div>
+              {phoneError && <p className="text-red-500 text-sm">{phoneError}</p>}
 
               <button className="w-full bg-[#4b2b78] text-white py-3 rounded-lg font-semibold hover:bg-blue-900 cursor-pointer">
                 SUBMIT »
