@@ -78,12 +78,7 @@ function App() {
                 isOpen={isRegisterOpen} 
                 onClose={handleRegisterClose} 
               />
-              {isInquiryOpen && (
-                <InquiryPopup 
-                  autoOpenDelay={0}
-                  onClose={() => setIsInquiryOpen(false)}
-                />
-              )}
+              <InquiryPopup />
               <SocialIcons />
             </>
           } />
