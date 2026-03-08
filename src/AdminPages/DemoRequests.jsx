@@ -7,7 +7,6 @@ const DemoRequests = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [viewModal, setViewModal] = useState(null);
-  const [editModal, setEditModal] = useState(null);
   const itemsPerPage = 4;
   const [requests, setRequests] = useState([]);
 
@@ -80,45 +79,6 @@ const handleDelete = async (id) => {
   }
 };
 
-// OPEN EDIT MODAL
-const handleEdit = (req) => {
-  setEditModal(req);
-};
-
-// SAVE EDIT
-const handleSaveEdit = async () => {
-  try {
-    const res = await fetch(
-      `${API_URL}/api/demo-requests/${editModal.id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: editModal.email,
-          country_code: editModal.country_code,
-          phone: editModal.phone,
-        }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (data.success) {
-      setRequests(
-        requests.map((r) =>
-          r.id === editModal.id ? editModal : r
-        )
-      );
-      setEditModal(null);
-    }
-  } catch (error) {
-    console.log("Update Error:", error);
-  }
-};
-
-
   return (
     <div className="p-4 md:p-6">
       <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-[#4a7c6f] to-[#5a8c7f] bg-clip-text text-transparent flex items-center gap-2">
@@ -159,7 +119,6 @@ const handleSaveEdit = async () => {
                   <td className="p-2 md:p-3 text-xs md:text-sm">{req.created_at}</td>
                   <td className="p-2 md:p-3 flex gap-1 md:gap-2">
                     <button onClick={() => setViewModal(req)} className="bg-blue-500 text-white px-2 md:px-3 py-1 rounded text-xs hover:bg-blue-600">👁️</button>
-                    <button onClick={() => handleEdit(req)} className="bg-[#4a7c6f] text-white px-2 md:px-3 py-1 rounded text-xs hover:bg-[#3d6659]">✏️</button>
                     <button onClick={() => handleDelete(req.id)} className="bg-red-500 text-white px-2 md:px-3 py-1 rounded text-xs hover:bg-red-600">🗑️</button>
                   </td>
                 </tr>
@@ -209,22 +168,6 @@ const handleSaveEdit = async () => {
               <p><strong>Date:</strong> {viewModal.created_at}</p>
             </div>
             <button onClick={() => setViewModal(null)} className="mt-4 bg-gray-500 text-white px-4 py-2 rounded w-full">Close</button>
-          </div>
-        </div>
-      )}
-
-      {editModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setEditModal(null)}>
-          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg md:text-xl font-bold mb-4">Edit Demo Request</h3>
-            <div className="space-y-3">
-              <input type="email" value={editModal.email} onChange={(e) => setEditModal({...editModal, email: e.target.value})} className="w-full border px-3 py-2 rounded" />
-              <input type="text" value={editModal.phone} onChange={(e) => setEditModal({...editModal, phone: e.target.value})} className="w-full border px-3 py-2 rounded" />
-            </div>
-            <div className="flex gap-2 mt-4">
-              <button onClick={handleSaveEdit} className="flex-1 bg-[#4a7c6f] text-white px-4 py-2 rounded">Save</button>
-              <button onClick={() => setEditModal(null)} className="flex-1 bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
-            </div>
           </div>
         </div>
       )}

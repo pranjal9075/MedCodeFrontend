@@ -23,7 +23,7 @@ const BrochureDownloads = () => {
             id: d.id,
             name: d.name || d.email.split("@")[0],
             email: d.email,
-            mobile: d.mobile,
+            mobile: d.mobile || d.phone,
             date: new Date(d.created_at).toLocaleString(),
           }))
         );
@@ -94,39 +94,6 @@ const BrochureDownloads = () => {
   }
 };
 
-const handleEdit = (download) => {
-  setEditModal(download);
-};
-
-const handleSaveEdit = async () => {
-  try {
-    const res = await fetch(
-      `${API_URL}/api/brochure-requests/${editModal.id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: editModal.email,
-          mobile: editModal.mobile,
-        }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (data.success) {
-      fetchDownloads();
-      setEditModal(null);
-    } else {
-      alert(data.message);
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Update failed");
-  }
-};
 
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -160,21 +127,6 @@ const handleSaveEdit = async () => {
   </div>
 )}
 
-{editModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setEditModal(null)}>
-    <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-      <h3 className="text-lg md:text-xl font-bold mb-4">Edit Brochure Download</h3>
-      <div className="space-y-3">
-        <input type="email" value={editModal.email} onChange={(e) => setEditModal({...editModal, email: e.target.value})} className="w-full border px-3 py-2 rounded" placeholder="Email" />
-        <input type="text" value={editModal.mobile} onChange={(e) => setEditModal({...editModal, mobile: e.target.value})} className="w-full border px-3 py-2 rounded" placeholder="Mobile" />
-      </div>
-      <div className="flex gap-2 mt-4">
-        <button onClick={handleSaveEdit} className="flex-1 bg-[#4a7c6f] text-white px-4 py-2 rounded">Save</button>
-        <button onClick={() => setEditModal(null)} className="flex-1 bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
-      </div>
-    </div>
-  </div>
-)}
   <div className="bg-white rounded-lg shadow overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full min-w-[600px]">
@@ -196,7 +148,6 @@ const handleSaveEdit = async () => {
               <td className="p-2 md:p-3 text-xs md:text-sm">{download.date}</td>
               <td className="p-2 md:p-3 flex gap-1 md:gap-2">
                 <button onClick={() => setViewModal(download)} className="bg-blue-500 text-white px-2 md:px-3 py-1 rounded text-xs hover:bg-blue-600 transition-all">👁️</button>
-                <button onClick={() => handleEdit(download)} className="bg-[#4a7c6f] text-white px-2 md:px-3 py-1 rounded text-xs hover:bg-[#3d6659] transition-all">✏️</button>
                 <button onClick={() => handleDelete(download.id)} className="bg-red-500 text-white px-2 md:px-3 py-1 rounded text-xs hover:bg-red-600 transition-all">🗑️</button>
               </td>
             </tr>
