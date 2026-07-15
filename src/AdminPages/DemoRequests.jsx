@@ -101,7 +101,22 @@ const handleDelete = async (id) => {
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Mobile Card View */}
+        <div className="block md:hidden">
+          {paginatedData.map((req) => (
+            <div key={req.id} className="border-b p-3 space-y-1">
+              <p className="text-xs text-gray-500 truncate">{req.email}</p>
+              <p className="text-xs text-gray-500">{req.phone}</p>
+              <p className="text-xs text-gray-400">{req.created_at}</p>
+              <div className="flex gap-2 pt-1">
+                <button onClick={() => setViewModal(req)} className="bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600">👁️</button>
+                <button onClick={() => handleDelete(req.id)} className="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600">🗑️</button>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full min-w-[600px]">
             <thead className="bg-gray-100">
               <tr>

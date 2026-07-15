@@ -61,12 +61,12 @@ const FeatureCards = () => {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-gray-50 to-gray-200 flex flex-col items-center py-16">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-gray-200 flex flex-col items-center py-19">
       <h1 className="text-3xl font-extrabold mb-12 text-gray-800 tracking-wide px-6">
         MedCode Exclusive Course Offering
       </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl w-full px-6 cursor-pointer">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8  w-full px-30  cursor-pointer">
         {features.map((item, index) => (
           <div
             key={index}

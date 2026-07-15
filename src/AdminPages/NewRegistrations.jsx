@@ -89,7 +89,26 @@ const handleDelete = async (id) => {
           <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="🔍 Search registrants..." className="border-2 border-gray-200 px-3 py-2 rounded-xl flex-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#4a7c6f] focus:border-transparent transition-all hover:border-[#4a7c6f]" />
           <button onClick={exportToPDF} className="border px-2 md:px-4 py-2 rounded-xl text-xs md:text-sm hover:bg-gray-100">Export</button>
         </div>
-        <div className="overflow-x-auto">
+        {/* Mobile Card View */}
+        <div className="block md:hidden">
+          {paginatedData.map((reg) => (
+            <div key={reg.id} className="border-b p-3 space-y-1 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 bg-gradient-to-br from-[#4a7c6f] to-[#5a8c7f] rounded-full flex-shrink-0"></div>
+                <p className="text-sm font-medium truncate">{reg.name}</p>
+              </div>
+              <p className="text-xs text-gray-500 truncate">{reg.email}</p>
+              <p className="text-xs text-gray-500">{reg.mobile}</p>
+              <p className="text-xs text-gray-400">{reg.joined}</p>
+              <div className="flex gap-2 pt-1">
+                <button onClick={() => setViewModal(reg)} className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-lg text-xs hover:shadow-lg transition-all">👁️</button>
+                <button onClick={() => handleDelete(reg.id)} className="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-lg text-xs hover:shadow-lg transition-all">🗑️</button>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Desktop Table View */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full min-w-[600px]">
             <thead className="bg-gray-50">
               <tr>
@@ -103,7 +122,6 @@ const handleDelete = async (id) => {
             <tbody>
               {paginatedData.map((reg) => (
                 <tr key={reg.id} className="border-b hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300 group">
-                  
                   <td className="p-2 md:p-3 flex items-center gap-2 text-xs md:text-sm"><div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-[#4a7c6f] to-[#5a8c7f] rounded-full flex-shrink-0 group-hover:scale-110 transition-transform duration-300"></div> <span className="truncate font-medium">{reg.name}</span></td>
                   <td className="p-2 md:p-3 text-xs md:text-sm truncate">{reg.email}</td>
                   <td className="p-2 md:p-3 text-xs md:text-sm">{reg.mobile}</td>

@@ -119,7 +119,7 @@ const MedicalCodingBanner = () => {
       }}
     >
       {/* Main Container */}
-      <div className="max-w-7xl w-full px-6 grid md:grid-cols-2">
+      <div className="max-w-7xl w-full grid md:grid-cols-2">
 
         {/* Left Content */}
         <div>

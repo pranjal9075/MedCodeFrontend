@@ -128,7 +128,23 @@ const BrochureDownloads = () => {
 )}
 
   <div className="bg-white rounded-lg shadow overflow-hidden">
-    <div className="overflow-x-auto">
+    {/* Mobile Card View */}
+    <div className="block md:hidden">
+      {paginatedData.map((download) => (
+        <div key={download.id} className="border-b p-3 space-y-1">
+          <p className="text-sm font-semibold">{download.name}</p>
+          <p className="text-xs text-gray-500 truncate">{download.email}</p>
+          <p className="text-xs text-gray-500">{download.mobile}</p>
+          <p className="text-xs text-gray-400">{download.date}</p>
+          <div className="flex gap-2 pt-1">
+            <button onClick={() => setViewModal(download)} className="bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600">👁️</button>
+            <button onClick={() => handleDelete(download.id)} className="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600">🗑️</button>
+          </div>
+        </div>
+      ))}
+    </div>
+    {/* Desktop Table View */}
+    <div className="hidden md:block overflow-x-auto">
       <table className="w-full min-w-[600px]">
         <thead className="bg-gray-100">
           <tr>

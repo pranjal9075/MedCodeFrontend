@@ -31,7 +31,7 @@ const WhyMed = () => {
 
   return (
     <div ref={sectionRef} className="bg-white py-10 px-6">
-      <div className="max-w-7xl mx-auto text-center">
+      <div className="max-w-full mx-10 text-center">
 
         <h2 className="text-3xl font-bold mb-4 text-gray-800">
           Why medcode.tech<span className="text-purple-600">®</span>?
@@ -43,9 +43,9 @@ const WhyMed = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-6 gap-6">
           {stats.map((item, index) => (
-            <div key={index} className="bg-white border p-6 rounded-xl shadow-sm flex flex-col items-center">
+            <div key={index} className="bg-white border p-6 rounded-xl shadow-sm flex flex-col items-center h-70">
 
-              <div className={`w-24 h-24 flex items-center justify-center rounded-full mb-4 ${item.color}`}>
+              <div className={`w-24 h-24 flex items-center justify-center rounded-full mb-10 ${item.color}`}>
                 <span className="text-2xl font-bold">
                   <CountUp end={item.number} duration={1800} trigger={trigger} />+
                 </span>

@@ -119,21 +119,21 @@ const TopBar = () => {
 
       {/* TOP BAR UI */}
       <div className="w-full bg-white border-b fixed top-0 left-0 z-40 shadow-sm">
-        <div className="max-w-6xl mx-auto flex justify-between md:grid items-center px-2 md:px-4 py-2 md:grid-cols-[auto_1fr_auto] gap-2 md:gap-3">
+        <div className="max-w-full mx-auto flex justify-between md:grid items-center px-2 md:px-4 py-4 md:grid-cols-[auto_1fr_auto] gap-2 md:gap-3">
           
           {/* LEFT */}
           <div className="flex items-center gap-6 md:gap-3 shrink-0 cursor-pointer" onClick={handleScroll}>
             <img src={assets.logo} alt="Logo" className="h-15 w-auto" />
             <div className="w-0.5 h-10 bg-[#4C34A5]" />
             <div className="leading-tight text-center">
-              <p className="text-xl md:text-3xl font-semibold text-[#4C34A5]">12</p>
+              <p className="text-3xl md:text-3xl font-semibold text-[#4C34A5]">12</p>
               <p className="text-[10px] md:text-[11px] text-[#4C34A5]">Years</p>
             </div>
           </div>
 
           {/* CENTER */}
           <div className="hidden md:flex flex-col items-center text-center font-medium">
-            <div className="flex gap-3 text-[13px] text-gray-700">
+            <div className="flex gap-3 text-[25px] text-gray-700">
               <span>41,000+ Trained</span> | <span>5,600+ Reviews</span> | <span>4,000+ Live Classes</span>
             </div>
           </div>
